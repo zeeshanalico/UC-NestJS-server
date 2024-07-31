@@ -18,6 +18,7 @@ export class AuthGuard implements CanActivate {
   }
 }
 
+
 function validateRequest(request: any): boolean {
   // Implement authentication  here
   return true;

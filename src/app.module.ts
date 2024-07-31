@@ -10,7 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UrlModule } from './modules/url/url.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeyModule } from './modules/api-key/api-key.module';
-
+import { AuthService } from './modules/auth/auth.service';
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
@@ -33,6 +33,7 @@ import { ApiKeyModule } from './modules/api-key/api-key.module';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    AuthService,
   ]
 })
 
