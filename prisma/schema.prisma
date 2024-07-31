@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum URLTYPE {
+ store
+  product
+ misc
+}
+
+enum STATUS {
+  active
+  inactive
+}
+
+
 model api_key {
   api_key_id Int       @id @default(autoincrement())
   user_id    String    @db.Uuid
@@ -54,10 +66,10 @@ model url {
   short_url        String      @unique @db.VarChar(20)
   logo_id          Int?
   tag_id           Int?
-  url_type         String?     @db.VarChar(10)
+  url_type         URLTYPE     
   associated       Boolean     @default(false)
   expiration_date  DateTime?   @db.Date
-  status           String      @default("active") @db.VarChar(10)
+  status           STATUS      @default(active) 
   created_at       DateTime    @default(now()) @db.Timestamp(6)
   updated_at       DateTime    @default(now()) @db.Timestamp(6)
   deleted_at       DateTime?   @db.Timestamp(6)
