@@ -48,7 +48,6 @@ const loggerTransports = isProduction
     dailyRotateFileTransport('info'),
     dailyRotateFileTransport('warn'),
     dailyRotateFileTransport('error'),
-    dailyRotateFileTransport('debug'),
   ]
   : [
     new transports.Console({

@@ -27,8 +27,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     console.log(exception.code);
 
     console.log(JSON.stringify(exception, null, 2));
-
-    // Handle specific Prisma errors
+    
     switch (exception.code) {
       case 'P2002':
         statusCode = HttpStatus.CONFLICT;
@@ -52,6 +51,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       case 'P2016':
         statusCode = HttpStatus.BAD_REQUEST;
         message = 'Query interpretation error';
+        case 'P1001':
+        statusCode = HttpStatus.BAD_REQUEST;
+        message = "Can't reach database server";
+
         break;
       default:
         break;

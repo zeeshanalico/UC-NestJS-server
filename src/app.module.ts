@@ -11,6 +11,8 @@ import { UrlModule } from './modules/url/url.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeyModule } from './modules/api-key/api-key.module';
 import { AuthService } from './modules/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',

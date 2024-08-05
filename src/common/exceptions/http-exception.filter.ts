@@ -15,25 +15,26 @@ interface ErrorResponse {
   error: string;
   path: string;
   data: any;
-  exception:any;
+  // exception:any;
 }
 
 @Catch()
 export class HttpExceptionsFilter<T> implements ExceptionFilter {
   constructor(private readonly logger: LoggerService) { }
 
-  catch(exception: T, host: ArgumentsHost) {  
+  catch(exception: T, host: ArgumentsHost) {
+    
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-
-      // console.log('\n______\n',exception instanceof Prisma.PrismaClientKnownRequestError, '\n______\n');
+    // const [req, res, next] = host.getArgs();
+    // console.log('\n______\n' , res, '\n______\n');
 
     const isHttpException = exception instanceof HttpException;
 
 
     const statusCode = isHttpException
-      ? (exception.getStatus() | 500)
+      ? (exception.getStatus() || 500)
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const message = isHttpException
@@ -51,12 +52,12 @@ export class HttpExceptionsFilter<T> implements ExceptionFilter {
 
     const errorResponse: ErrorResponse = {
       statusCode,
-      // message: Array.isArray(message) ? message : [message],
-      message,
+      message: Array.isArray(message) ? message : [message],
+      // message,
       error,
       path: request.url,
       data: null,
-      exception
+      // exception
     };
 
     this.logger.error(

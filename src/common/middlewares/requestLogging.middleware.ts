@@ -1,28 +1,16 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { LoggerService } from 'src/modules/logger/logger.service';
+
 @Injectable()
-export class RequestLoggingMiddleware implements NestMiddleware {
-  constructor(private readonly logger: LoggerService) {}
-
+export class AfterResponseMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const { method, url, headers, ip, body, query, params } = req;
-    const userAgent = headers['user-agent'] || '';
-    const reqHost = headers.host || '';
+    console.log('Middleware before handler execution');
 
-    // Log basic request information
-    this.logger.info('Incoming request', {
-      reqHost,
-      method,
-      url,
-      ip,
-      userAgent,
-      body: JSON.stringify(body),
-      query: JSON.stringify(query),
-      params: JSON.stringify(params),
+    res.on('finish', () => {
+      console.log('Response has been sent, running post-response logic');
     });
 
-    // Proceed to next middleware or route handler
-    next();
+    next(); 
   }
 }
+
