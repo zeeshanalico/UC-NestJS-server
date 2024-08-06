@@ -34,3 +34,10 @@ export class SignUpDto {
 }
 
 
+export class AuthDto {
+    @IsNotEmpty()
+    @IsString()
+    access_token:string;
+}
+
+

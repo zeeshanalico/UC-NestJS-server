@@ -3,6 +3,16 @@ import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { LoggerService } from '../logger.service';
 
+export type Response<T> = {
+  status: boolean;
+  statusCode: number;
+  path: string;
+  message: string;
+  data: T;
+  timestamp: string;
+};
+ 
+
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
   constructor(private readonly logger: LoggerService) { }
@@ -19,16 +29,6 @@ export class ResponseInterceptor implements NestInterceptor {
     const date = new Date()
     const formattedDate = date.toISOString()
 
-    // console.log(
-    //   '┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n' +
-    //   `│  Request| ${method}@${reqHost}${url} | ${formattedDate} \n` +
-    //   // `│  User-Agent: \t${userAgent}\n` +
-    //   '└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n'
-    //   // `│  Body:       \t${JSON.stringify(body, null, 2).replace(/\n/g, '\n│             \t')}\n` +
-    //   // `│  Query:      \t${JSON.stringify(query, null, 2).replace(/\n/g, '\n│             \t')}\n` +
-    //   // `│  Params:     \t${JSON.stringify(params, null, 2).replace(/\n/g, '\n│             \t')}\n` +
-    //   // '└─────────────────────────────────────────────┘\n'
-    // );
     this.logger.info(`Req | ${method}@${reqHost}${url} `);
     return next.handle().pipe(
       tap(() => {

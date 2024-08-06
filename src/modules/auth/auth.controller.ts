@@ -1,12 +1,11 @@
-import { Body, Controller, ValidationPipe, HttpCode, Post, HttpStatus, ConflictException, HttpException } from '@nestjs/common';
-import { SignInDto, SignUpDto } from './auth.dto';
+import { Body, Controller, UnauthorizedException, ValidationPipe, HttpCode, Post, HttpStatus, ConflictException, HttpException } from '@nestjs/common';
+import { SignInDto, SignUpDto, AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Prisma, } from '@prisma/client';
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {
     }
-
     @HttpCode(HttpStatus.OK)
     @Post('login')
 
@@ -20,6 +19,27 @@ export class AuthController {
         const user = await this.authService.signUp(email, password, username, role_id);
         return { statusCode: HttpStatus.OK, data: user };
     }
+
+    @Post('authenticate')
+    async authenticate(@Body(ValidationPipe) { access_token }: AuthDto) {
+        try {
+            const user = await this.authService.decodeToken(access_token);
+            return { statusCode: HttpStatus.OK, data: user };
+
+        } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                throw new UnauthorizedException('Token has expired');
+            } else if (error.name === 'JsonWebTokenError') {
+                throw new UnauthorizedException('Invalid access token');
+            } else if (error instanceof UnauthorizedException) {
+                throw error
+            } else {
+                console.error('Unexpected authentication error:', error);
+                throw new UnauthorizedException('Authentication failed');
+            }
+        }
+    }
+
 }
 
 
