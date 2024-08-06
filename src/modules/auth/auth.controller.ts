@@ -1,7 +1,8 @@
 import { Body, Controller, UnauthorizedException, ValidationPipe, HttpCode, Post, HttpStatus, ConflictException, HttpException } from '@nestjs/common';
 import { SignInDto, SignUpDto, AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { Prisma, } from '@prisma/client';
+import { generateUsername } from 'unique-username-generator';
+import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {
@@ -10,22 +11,23 @@ export class AuthController {
     @Post('login')
 
     async signIn(@Body(ValidationPipe) signInDto: SignInDto) {
-        const token = await this.authService.signIn(signInDto)
-        return { data: token, statusCode: 200 }
+        const user = await this.authService.signIn(signInDto)
+        return  user 
     }
 
     @Post('signup')
-    async signUp(@Body(ValidationPipe) { email, password, username, role_id }: SignUpDto) {
-        const user = await this.authService.signUp(email, password, username, role_id);
-        return { statusCode: HttpStatus.OK, data: user };
+    @ResponseMessage('Thanks for signing up!')
+    async signUp(@Body(ValidationPipe) { email, password, role_id }: SignUpDto) {
+        const username=generateUsername(email, 5)
+        const user = await this.authService.signUp({username,email, password, role_id});
+        return user;
     }
 
     @Post('authenticate')
     async authenticate(@Body(ValidationPipe) { access_token }: AuthDto) {
         try {
             const user = await this.authService.decodeToken(access_token);
-            return { statusCode: HttpStatus.OK, data: user };
-
+            return  user
         } catch (error) {
             if (error.name === 'TokenExpiredError') {
                 throw new UnauthorizedException('Token has expired');

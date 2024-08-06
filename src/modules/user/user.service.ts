@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto } from './dto/user.dto';
 import { user as PrismaUser, user_role as PrismaUserRole } from '@prisma/client';
 interface UserWithRole extends PrismaUser {
   user_role?: PrismaUserRole; // Adjust if user_role is mandatory or optional
@@ -14,7 +14,7 @@ export class UserService {
 
   }
 
-  async createUser({ username, email, password_hash, role_id = 1 }: CreateUserDto): Promise<PrismaUser> {
+  async createUser({ username, email, password_hash, role_id  }: CreateUserDto): Promise<PrismaUser> {
 
     const user = await this.prisma.user.create({
       data: { username, email, password_hash, role_id },

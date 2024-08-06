@@ -5,13 +5,12 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { LoggerModule } from './modules/logger/logger.module';
-import { ResponseInterceptor } from './modules/logger/interceptors/logger.interceptor';
+import { ResponseInterceptor } from './common/Interceptors/response.interceptor';
 import { AuthModule } from './modules/auth/auth.module';
 import { UrlModule } from './modules/url/url.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeyModule } from './modules/api-key/api-key.module';
 import { AuthService } from './modules/auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [ConfigModule.forRoot({

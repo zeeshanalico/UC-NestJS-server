@@ -60,7 +60,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         break;
     }
 
-    this.logger.error('Prisma error occurred', exception.stack, request);
+    this.logger.error('Prisma error occurred', exception.stack, );
 
     // Send the response
     response.status(statusCode).json({

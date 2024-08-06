@@ -3,13 +3,14 @@ import { UserService } from './user.service';
 import { PrismaExceptionFilter } from 'src/common/exceptions/prisma-exception.filter';
 import { LoggerService } from '../logger/logger.service';
 import { user } from '@prisma/client';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { ValidationPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.deorator';
 import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';
+import { generateFromEmail, generateUsername } from 'unique-username-generator';
 //sequence of decorators doesn't matter because these are instantiated in class definition phase
 @Controller('users')
 @UseGuards(TokenAuthGuard, RolesGuard)
@@ -47,7 +48,7 @@ export class UserController {
       }
       const user: user = await this.userService.findUserByUsername({ username });
       console.log(user);
-      
+
       if (!user) {
         return { statusCode: HttpStatus.OK, data: { isAvailable: false } };
       }

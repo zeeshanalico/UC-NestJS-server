@@ -10,10 +10,7 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const reqHost = req.headers.host;
     const reqType = req.method;
-    this.logger.info(`sucesfull login`, {
-      reqHost,
-      reqType,
-    });
+    // this.logger.info(`sucesfull login`,'sdf');
     next();
   }
 }

@@ -3,21 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import 'winston-daily-rotate-file';
 
-// Get today's date string
-const date = new Date();
-const dateString =
-  ((date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate())
-  + '-'
-  + (((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1))
-  + '-'
-  + date.getFullYear();
-
 // Create logs directory if not exists
 const logsDirectory = path.join(__dirname, 'logs');
 if (!fs.existsSync(logsDirectory)) {
   fs.mkdirSync(logsDirectory);
 }
-
 
 const dailyRotateFileTransport = (level: string) => new transports.DailyRotateFile({
   level,
@@ -28,17 +18,9 @@ const dailyRotateFileTransport = (level: string) => new transports.DailyRotateFi
   maxSize: '20m',
   maxFiles: '30d',
   format: format.combine(
-    format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss',
-    }),
-    format.printf(({ timestamp, level, message, context, trace, reqHost, reqType }) => {
-      return `${timestamp} [${level}] ${context ? `[${context}]` : ''} ${message} ${reqHost ? `[Host: ${reqHost}]` : ''
-        } ${reqType ? `[Type: ${reqType}]` : ''} ${trace ? `[Trace: ${trace}]` : ''}`;
-    })
+    format.timestamp(),
+    format.json(),
   ),
-
-
-
 });
 
 const isProduction = process.env.NODE_ENV.trim() == 'production';
@@ -52,18 +34,19 @@ const loggerTransports = isProduction
   : [
     new transports.Console({
       format: format.combine(
-        format.colorize(),
+        format.colorize({all:true}),
+        format.align(),
         format.simple(),
-        format.printf((request) => {
-          const { level, message , reqHost = '', method, url } = request;          
-
-          return `${dateString} [${level}]: ${message} ${reqHost}${url}`
+        format.timestamp({
+          format: 'YYYY-MM-DD hh:mm:ss.SSS A', // 2022-01-25 03:23:10.350 PM
+        }),
+        format.printf(({ timestamp, level, message, context, trace }) => {
+          return `${timestamp} [${context}] ${level}: ${message}${trace ? `\n${trace}` : ''}`;
         }),
       ),
     })
   ];
 
-// Configure logger
 export const logger = createLogger({
   level: 'info',
   format: format.combine(
@@ -73,3 +56,9 @@ export const logger = createLogger({
   ),
   transports: loggerTransports,
 });
+
+    // format.printf(({ timestamp, level, message, context, trace, reqHost, reqType }) => {
+    //   return `${timestamp} [${level}] ${context ? `[${context}]` : ''} ${message} ${reqHost ? `[Host: ${reqHost}]` : ''
+    //     } ${reqType ? `[Type: ${reqType}]` : ''} ${trace ? `[Trace: ${trace}]` : ''}`;
+    // })
+    
