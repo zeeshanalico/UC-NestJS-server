@@ -10,9 +10,7 @@ import * as fs from 'fs'
 import * as QRCode from 'qrcode'
 @Injectable()
 export class UrlService {
-    constructor(private readonly prisma: PrismaService) {
-        // this.getAllUrls('4ae3b08a-c2b6-46b2-94f7-d5ce540e8c9d').then(res=>console.log(res));
-    }
+    constructor(private readonly prisma: PrismaService) { }
     public readonly uploadsDir = resolve(__dirname, '../../uploads');
 
     async generateQrCode(short_url: string): Promise<string> {
@@ -38,7 +36,7 @@ export class UrlService {
     }
 
     async createShortUrl({ user_id, original_url, url_type, expiration_date }: { user_id: string, original_url: string, url_type: URLTYPE, expiration_date: Date }): Promise<string> {
-            const isoDate = new Date(expiration_date).toISOString()
+        const isoDate = new Date(expiration_date).toISOString()
 
         const short_url = this.generateShortenUrl();
         await this.prisma.url.create({
@@ -93,6 +91,12 @@ export class UrlService {
         })
         return deletedUrl;
     }
-// _____________________________________________
+
+    async getUrlDetailsByShortUrl(short_url: string):Promise<URL> {
+        return this.prisma.url.findUnique({
+            where: { short_url }
+        })
+    }
+    // _____________________________________________
 
 }

@@ -1,33 +1,40 @@
-import { PrismaService } from "src/modules/prisma/prisma.service";
-export class UrlClickService{
-    constructor(private readonly prisma:PrismaService){}
-    
-async getUrlClicks() {
-    return await this.prisma.url_click.findMany();
-  }
+import { Injectable } from '@nestjs/common';
 
-  async getUrlClickById(click_id: number) {
-    return await this.prisma.url_click.findUnique({
-      where: { click_id },
-    });
-  }
+import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { CreateUrlClickDto, UpdateUrlClickDto } from './url-click.dto';
 
-  async softDeleteUrlClick(id: number) {
-    return await this.prisma.url_click.update({
-      where: { click_id: id },
-      data: {
-        is_deleted: true,
-        deleted_at: new Date(),
-      },
-    });
-  }
+@Injectable()
+export class UrlClickService {
+    constructor(private readonly prisma: PrismaService) { }
 
-//   async createUrlClick(data: z.infer<typeof createUrlClickDto>) {
-//     const validatedData = createUrlClickDto.parse(data);
+    async getUrlClicks() {
+        return this.prisma.url_click.findMany();
+    }
 
-//     return await this.prisma.url_click.create({
-//       data: validatedData,
-//     });
-//   }
+    async getUrlClickById(click_id: number) {
+        return this.prisma.url_click.findUnique({
+            where: { click_id },
+        });
+    }
 
+    async createUrlClick(data: CreateUrlClickDto) {
+        return this.prisma.url_click.create({data});
+    }
+
+    async updateUrlClick(click_id: number, data: UpdateUrlClickDto) {
+        return this.prisma.url_click.update({
+            where: { click_id },
+            data,
+        });
+    }
+
+    async softDeleteUrlClick(click_id: number) {
+        return this.prisma.url_click.update({
+            where: { click_id },
+            data: {
+                is_deleted: true,
+                deleted_at: new Date(),
+            },
+        });
+    }
 }

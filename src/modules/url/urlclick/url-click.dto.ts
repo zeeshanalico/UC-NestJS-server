@@ -1,5 +1,4 @@
-
-import { IsString, IsOptional, IsDate, IsNotEmpty, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsDate, IsNotEmpty, IsBoolean } from 'class-validator';
 
 export class CreateUrlClickDto {
     @IsString()
@@ -28,23 +27,21 @@ export class CreateUrlClickDto {
   
     @IsOptional()
     @IsString()
-    country?: string;
+    country?: string|null;
   
     @IsOptional()
     @IsString()
-    city?: string;
+    city?: string|null;
   
     @IsOptional()
     @IsDate()
     deleted_at?: Date;
   
-    @IsBoolean()
     @IsOptional()
+    @IsBoolean()
     is_deleted?: boolean;
-  }
+}
 
-
-  
 export class UpdateUrlClickDto {
     @IsOptional()
     @IsString()
@@ -85,5 +82,4 @@ export class UpdateUrlClickDto {
     @IsOptional()
     @IsBoolean()
     is_deleted?: boolean;
-  }
-  
+}
