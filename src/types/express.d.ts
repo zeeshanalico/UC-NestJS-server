@@ -1,10 +1,12 @@
-// src/types/express.d.ts
 import { Request } from 'express';
 import { UserPayload } from './user';
+import { ApiKeyWithUser } from 'src/modules/api-key/api-key.service';
 declare global {
   namespace Express {
     interface Request {
-      user?: UserPayload; // Extend with your UserPayload type
+      user?: UserPayload;
+      apiKey?: ApiKeyWithUser;
+
     }
   }
 }

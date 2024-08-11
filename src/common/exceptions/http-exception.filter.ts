@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { LoggerService } from 'src/modules/logger/logger.service';
 import { format } from 'date-fns';
 import { Prisma } from '@prisma/client'; // Import Prisma errors
+import { PrismaException } from './custom-exception';
 
 interface ErrorResponse {
   statusCode: number;
@@ -33,7 +34,8 @@ export class HttpExceptionsFilter<T> implements ExceptionFilter {
     const statusCode = isHttpException
       ? exception.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR
       : HttpStatus.INTERNAL_SERVER_ERROR;
-
+    console.log('ZEESHAN',exception);
+    
     let message: string | string[];
     let error: string;
 
@@ -42,7 +44,7 @@ export class HttpExceptionsFilter<T> implements ExceptionFilter {
       message = (response as any)?.message || exception.message;
       error = (response as any)?.error || exception.name;
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-
+        
       switch (exception.code) {
         case 'P2002':
           message = 'Unique constraint failed';
@@ -61,6 +63,9 @@ export class HttpExceptionsFilter<T> implements ExceptionFilter {
           message = 'Prisma error occurred';
           error = exception.code;
       }
+
+      console.log(message);
+      
     } else if (exception instanceof Error) {
       message = exception.message;
       error = exception.name;

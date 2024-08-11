@@ -10,7 +10,6 @@ export class AuthService {
 
     async signIn({ email, password }: { email: string, password: string }): Promise<{ access_token: string | null; user_role: { role_id: number; role_name: string }; }> {
         const user = await this.userService.getUserByEmail({ email });
-        console.log(user);
         if (!user) {
             throw new HttpException('Invalid email', 401);
         }

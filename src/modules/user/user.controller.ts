@@ -10,39 +10,34 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.deorator';
 import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';
-import { generateFromEmail, generateUsername } from 'unique-username-generator';
-//sequence of decorators doesn't matter because these are instantiated in class definition phase
+import {ResponseMessage} from 'src/common/decorators/response-message.decorator';
+import { UserResponseDto } from './dto/user-response.dto';
+
 @Controller('users')
 @UseGuards(TokenAuthGuard, RolesGuard)
-@Roles('admin', 'user')
-@UseFilters(new PrismaExceptionFilter(new LoggerService()))
+@Roles('ADMIN','SUPER_ADMIN')
+// @UseFilters(new PrismaExceptionFilter(new LoggerService()))
+
 export class UserController {
 
   constructor(private readonly userService: UserService) { }
 
   @Post()
+  @ResponseMessage('User created successfully')
   async createUser(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    try {
       const newUser: user = await this.userService.createUser(createUserDto);
       return { statusCode: HttpStatus.CREATED, data: newUser };
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
   }
-
+  
   @Get()
+  @ResponseMessage('Users retrieved successfully')
   async getUsers() {
-    try {
       const users: user[] = await this.userService.getUsers();
-      return { statusCode: HttpStatus.OK, data: users };
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      return   users;
   }
-  @Get('username') // Updated endpoint
+  @Get('/') // Updated endpoint
   @Public()
   async checkUsernameAvailability(@Query('username') username: string) {
-    try {
       if (!username) {
         return { statusCode: HttpStatus.BAD_REQUEST, message: 'Username is required' };
       }
@@ -52,50 +47,36 @@ export class UserController {
       if (!user) {
         return { statusCode: HttpStatus.OK, data: { isAvailable: false } };
       }
-      return { statusCode: HttpStatus.OK, data: { isAvailable: true } };
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      return  { isAvailable: true } ;
     }
-  }
+  
 
   @Get(':id')
+  @ResponseMessage('User retrieved successfully')
   async getUserById(@Param('id') id: string) {
-    try {
       const user: user | null = await this.userService.getUserById(id);
       return { status: HttpStatus.OK, data: user };
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
   }
 
   @Put(':id')
+  @ResponseMessage('user updated successfully')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    try {
       const updatedUser: user = await this.userService.updateUser(
         id,
         updateUserDto.username,
         updateUserDto.email,
         updateUserDto.role_id,
       );
-      return { status: HttpStatus.OK, data: updatedUser };
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      return  updatedUser ;
   }
 
   @Delete(':id')
+  @ResponseMessage('user Deleted successfully')
   async deleteUser(@Param('id') id: string) {
-    try {
       const deletedUser: user = await this.userService.deleteUser(id);
-      return { status: HttpStatus.OK, data: deletedUser };
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      return deletedUser;
   }
 }

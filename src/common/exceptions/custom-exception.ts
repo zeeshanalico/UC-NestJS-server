@@ -39,3 +39,11 @@
 //   }
 // }
 
+
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+export class PrismaException extends PrismaClientKnownRequestError {
+    constructor(message: string, code: any, meta?: any, clientVersion?: string, batchRequestIdx?: number,) {
+        super(message, { code, clientVersion: null, batchRequestIdx: null, meta: null })
+    };
+}

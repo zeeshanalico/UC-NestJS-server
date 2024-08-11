@@ -9,17 +9,17 @@ export class AuthController {
     }
     @HttpCode(HttpStatus.OK)
     @Post('login')
-
     async signIn(@Body(ValidationPipe) signInDto: SignInDto) {
         const user = await this.authService.signIn(signInDto)
-        return  user 
+        return user 
     }
 
     @Post('signup')
     @ResponseMessage('Thanks for signing up!')
     async signUp(@Body(ValidationPipe) { email, password, role_id }: SignUpDto) {
-        const username=generateUsername(email, 5)
-        const user = await this.authService.signUp({username,email, password, role_id});
+        const username=generateUsername(email, 5);
+        console.log(username);
+        const user = await this.authService.signUp({username:'343',email, password, role_id});
         return user;
     }
 

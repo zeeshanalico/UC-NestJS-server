@@ -1,11 +1,18 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateUserDto } from './dto/user.dto';
-import { user as PrismaUser, user_role as PrismaUserRole } from '@prisma/client';
+import { user as PrismaUser, user_role as PrismaUserRole, } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaExceptionFilter } from 'src/common/exceptions/prisma-exception.filter';
+import { LoggerService } from '../logger/logger.service';
+import { PrismaException } from 'src/common/exceptions/custom-exception';
 interface UserWithRole extends PrismaUser {
   user_role?: PrismaUserRole; // Adjust if user_role is mandatory or optional
 }
+
 @Injectable()
+// @UseFilters(new PrismaExceptionFilter(new LoggerService()))
+
 export class UserService {
   constructor(private readonly prisma: PrismaService) {
 
@@ -14,12 +21,16 @@ export class UserService {
 
   }
 
-  async createUser({ username, email, password_hash, role_id  }: CreateUserDto): Promise<PrismaUser> {
-
+  async createUser({ username, email, password_hash, role_id = 3 }: CreateUserDto): Promise<PrismaUser> {//buggy
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    // if (existingUser) {
+    //   throw new PrismaException('Email already in use', HttpStatus.CONFLICT);
+    // }
     const user = await this.prisma.user.create({
       data: { username, email, password_hash, role_id },
     });
-    console.log(user)
     return user;
   }
 
