@@ -20,7 +20,6 @@ export class AuthService {
         const payload: UserPayload = { user_id: user.user_id, username: user.username, user_role: user.user_role };
         const access_token = await this.jwtService.signAsync(payload, { secret: process.env.SECRET_KEY })
         const { role_id, role_name } = user.user_role
-        console.log({ access_token, user_role: { role_id, role_name } });
 
         return { access_token, user_role: { role_id, role_name } };
     }

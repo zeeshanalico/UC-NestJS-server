@@ -42,8 +42,6 @@ export class UserController {
         return { statusCode: HttpStatus.BAD_REQUEST, message: 'Username is required' };
       }
       const user: user = await this.userService.findUserByUsername({ username });
-      console.log(user);
-
       if (!user) {
         return { statusCode: HttpStatus.OK, data: { isAvailable: false } };
       }

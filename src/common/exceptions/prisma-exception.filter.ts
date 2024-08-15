@@ -23,11 +23,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
-    console.log(exception.code);
-
-    console.log(JSON.stringify(exception, null, 2));
-    
+    let message = 'Internal server error';    
     switch (exception.code) {
       case 'P2002':
         statusCode = HttpStatus.CONFLICT;

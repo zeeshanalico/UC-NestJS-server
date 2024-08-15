@@ -183,6 +183,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ResponseI<T>> 
       `Request: ${request.method} ${request.url}`,
       `ResponseInterceptor`,
     );
+    
     const isIgnore = this.reflector.get<string>(
       IS_IGNORE,
       context.getHandler(),

@@ -12,6 +12,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeyModule } from './modules/api-key/api-key.module';
 import { AuthService } from './modules/auth/auth.service';
 import { RedirectModule } from './modules/redirect/redirect.module';
+import { LogoModule } from './modules/logo/logo.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -26,12 +27,13 @@ import { RedirectModule } from './modules/redirect/redirect.module';
   AnalyticsModule,
   ApiKeyModule,
   RedirectModule,
+  LogoModule,
   ],
   providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionsFilter,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionsFilter,
+    // },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,

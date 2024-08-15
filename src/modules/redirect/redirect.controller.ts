@@ -35,9 +35,10 @@ export class RedirectController {
             country: null,
             city: null
         };
-
-        this.urlClickService.createUrlClick(clickData);
-        const original_url = await this.urlService.getOriginalUrl(params.short_url);
+        const { original_url, expiration_date } = await this.urlService.getOriginalUrl(params.short_url);
+        if (expiration_date < new Date()) {
+            throw new HttpException('url expired', HttpStatus.NOT_FOUND)
+        }
         return { url: original_url, statusCode: 302 };
     }
 }

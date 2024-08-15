@@ -8,3 +8,4 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
     exports:[UrlClickService]
 })
 export class UrlClickModule { }
+

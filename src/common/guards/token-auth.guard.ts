@@ -13,7 +13,6 @@ export class TokenAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
     const isPublic = this.reflector.get<string>(IS_PUBLIC_KEY, context.getHandler());
-    console.log(isPublic);
     if (isPublic) {
       return true;
     }

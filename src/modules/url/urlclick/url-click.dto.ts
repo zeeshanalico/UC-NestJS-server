@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsDate, IsNotEmpty, IsBoolean } from 'class-validator';
+import { Prisma, } from '@prisma/client';
 
 export class CreateUrlClickDto {
     @IsString()
