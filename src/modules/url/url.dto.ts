@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsNotEmpty , IsDate, IsBoolean} from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNotEmpty, IsDate, IsBoolean } from 'class-validator';
 import { URLTYPE, STATUS } from '@prisma/client';
 
 export class CreateUrlDto {
@@ -10,11 +10,11 @@ export class CreateUrlDto {
   tag_name?: string;
 
   @IsNotEmpty()
-  expiration_date:Date;
-  
+  expiration_date: Date;
+
   @IsEnum(URLTYPE)
   url_type: URLTYPE;
-  
+
   @IsOptional()
   @IsEnum(STATUS)
   status: STATUS;
@@ -49,5 +49,11 @@ export class UpdateUrlDto {
 
 }
 
+export class PregenerateDto {
+
+  @IsNotEmpty()
+  @IsEnum(URLTYPE)
+  url_type: URLTYPE;
+}
 
 

@@ -19,11 +19,13 @@ export class RedirectController {
         if (!urlDetail) {
             throw new HttpException('url not found', HttpStatus.NOT_FOUND)
         }
+        console.log("redir",urlDetail);
+        
         const ip_address = req.ip;
         const user_agent = req.headers['user-agent'] || '';
         const referrer = req.headers.referer || '';
-        const access_date = new Date();  // Current date
-        const access_time = new Date();  // Current time
+        const access_date = new Date();  
+        const access_time = new Date();  
 
         const clickData: CreateUrlClickDto = {
             url_id: urlDetail.url_id,

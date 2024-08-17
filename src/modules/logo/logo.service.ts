@@ -8,19 +8,18 @@ export class LogoService {
   public readonly uploadsLogoDir = path.resolve('./src/uploads/logos');
 
   constructor(private readonly prisma: PrismaService) {
+    //make logos directory if not exists
     if (!fs.existsSync(this.uploadsLogoDir)) {
       fs.mkdirSync(this.uploadsLogoDir);
     }
   }
 
-  // Create a new logo
   async create({ user_id, logoPaths }: { user_id: string, logoPaths: string[] }): Promise<Prisma.BatchPayload> {
     const logo = await this.prisma.logo.createMany({
       data: logoPaths.map((logo_path) => {
         return { user_id, logo_path };
       })
     });
-    console.log('ZESSHAN service logo many', logo);
     return logo;
   }
 
@@ -44,9 +43,9 @@ export class LogoService {
     return logoPath;
   }
   // Find all logos
-  async findAll(): Promise<LOGO[]> {
+  async findAll({ user_id }: { user_id: string }): Promise<LOGO[]> {
     return this.prisma.logo.findMany({
-      where: { is_deleted: false },
+      where: { is_deleted: false, user_id },
     });
   }
 
@@ -62,12 +61,10 @@ export class LogoService {
     return logo;
   }
 
-  // Update a logo by ID
   async update(logo_id: number, data: Prisma.logoUpdateInput): Promise<LOGO> {
     const logoExists = await this.prisma.logo.findUnique({
       where: { logo_id },
     });
-
     if (!logoExists || logoExists.is_deleted) {
       throw new NotFoundException(`Logo with ID ${logo_id} not found`);
     }

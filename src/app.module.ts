@@ -12,22 +12,27 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeyModule } from './modules/api-key/api-key.module';
 import { AuthService } from './modules/auth/auth.service';
 import { RedirectModule } from './modules/redirect/redirect.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { LogoModule } from './modules/logo/logo.module';
+import * as path from 'path';
 
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
     isGlobal: true,
   }),
-  LoggerModule,
-  PrismaModule,
-  UserModule,
-  AuthModule,
-  UrlModule,
-  AnalyticsModule,
-  ApiKeyModule,
-  RedirectModule,
-  LogoModule,
+  ServeStaticModule.forRoot({
+    rootPath: path.resolve('./src/uploads/logos'),
+  }),
+    LoggerModule,
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    UrlModule,
+    AnalyticsModule,
+    ApiKeyModule,
+    RedirectModule,
+    LogoModule,
   ],
   providers: [
     // {

@@ -1,4 +1,4 @@
-import { Body, Post,Get, Req ,Res} from '@nestjs/common';
+import { Body, Post, Get, Req, Res } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { LogoService } from './logo.service';
 import { Request } from 'express';
@@ -8,12 +8,21 @@ import { UploadedFiles } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { logo as LOGO } from '@prisma/client';
+import { transformLogoPath } from 'src/utils/transformShortUrl';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 @Controller('logo')
-@UseGuards(TokenAuthGuard)
+@UseGuards(TokenAuthGuard, RolesGuard)
 export class LogoController {
-    constructor(private readonly logoService: LogoService) {
+    constructor(private readonly logoService: LogoService) { }
 
-
+    @Get()
+    async getLogos(@Req() req: Request) {
+        const user_id = req.user.user_id;
+        const logos: LOGO[] = await this.logoService.findAll({ user_id });
+        const updatedLogos = logos.map((logo) => {
+            return { ...logo, logo_path: transformLogoPath(logo.logo_path) };
+        });
+        return updatedLogos;
     }
 
     @Post('/create')
@@ -27,11 +36,6 @@ export class LogoController {
         return totalRowsAffected;
     }
 
-    @Get()
-    async getLogos(@Req() req: Request,@Res() res: Response,) {
-        const logos: LOGO[] = await this.logoService.findAll();
-    }
-    
 }
 
 

@@ -16,6 +16,8 @@ export class UrlService {
         }
     }
 
+    async totalRecords():Promise<Number> { return await this.prisma.user.count() };
+
     async generateQrCode(short_url: string): Promise<string> {
 
         const url = `${process.env.MY_BASE_URL}/redirect/${short_url}`;
@@ -47,14 +49,18 @@ export class UrlService {
     }
 
     async pregenerate({ user_id, url_type }) {
-        await this.prisma.url.create({
+        console.log(url_type);
+
+        return await this.prisma.url.create({
             data: {
                 url_type,
                 user_id,
-                short_url: this.generateShortenUrl()
+                short_url: this.generateShortenUrl(),
+                is_pre_generated: true
             }
         })
     }
+
     async createShortUrl({ user_id, original_url, url_type, expiration_date, tag_name = null }: { user_id: string, original_url: string, url_type: URLTYPE, expiration_date: Date, tag_name?: string, }): Promise<any> {
         const isoDate = new Date(expiration_date).toISOString()
         const short_url = this.generateShortenUrl();
@@ -67,10 +73,7 @@ export class UrlService {
                 })
                 if (!url_tag) {
                     url_tag = await tx.url_tag.create({
-                        data: {
-                            tag_name,
-                            user_id
-                        }
+                        data: { tag_name, user_id }
                     })
                 }
             }
@@ -100,16 +103,31 @@ export class UrlService {
         return { original_url, expiration_date };
     }
 
-    async getAllUrls(user_id: string) {
+
+    async getAllUrls({ user_id, offset, limit, pregenerated }: { user_id: string; offset: number; limit: number; pregenerated: boolean }) {
+
         const urls = await this.prisma.url.findMany({
-            where: { user_id, is_deleted: false },
-            include: { logo: true, url_tag: true }
-        })
+            where: {
+                user_id,
+                is_deleted: false,
+                is_pre_generated: pregenerated,
+            },
+            include: {
+                logo: true,
+                url_tag: true,
+            },
+            skip: offset,
+            take: limit,
+        });
         return urls;
     }
 
     async updateUrl(url_id: string, attributes: Partial<URL>): Promise<URL> {
-        // Check if the URL exists
+        let isoDate = null;
+        if (attributes.expiration_date) {
+            isoDate = new Date(attributes.expiration_date).toISOString()
+        }
+        attributes = { ...attributes, expiration_date: isoDate };
         const existingUrl = await this.prisma.url.findUnique({ where: { url_id } });
         if (!existingUrl) {
             throw new NotFoundException('URL not found');
@@ -118,8 +136,8 @@ export class UrlService {
         const updatedUrl = await this.prisma.url.update({
             where: { url_id },
             data: {
-                ...attributes, // Spread the partial attributes to update only the provided fields
-                updated_at: new Date() // Update the timestamp
+                ...attributes,
+                updated_at: new Date()
             },
         });
         return updatedUrl;
