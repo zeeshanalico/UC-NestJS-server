@@ -25,9 +25,11 @@ export class UserService {
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
-    // if (existingUser) {
-    //   throw new PrismaException('Email already in use', HttpStatus.CONFLICT);
-    // }
+    if (existingUser) {
+      throw new PrismaException('Email already in use', HttpStatus.CONFLICT);
+    }
+    console.log(username);
+    
     const user = await this.prisma.user.create({
       data: { username, email, password_hash, role_id },
     });

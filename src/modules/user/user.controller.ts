@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Query, Param, Body, HttpStatus, HttpException, UseFilters } from '@nestjs/common';
 import { UserService } from './user.service';
-import { PrismaExceptionFilter } from 'src/common/exceptions/prisma-exception.filter';
-import { LoggerService } from '../logger/logger.service';
 import { user } from '@prisma/client';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { ValidationPipe } from '@nestjs/common';
@@ -11,7 +9,6 @@ import { Roles } from 'src/common/decorators/roles.deorator';
 import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';
 import {ResponseMessage} from 'src/common/decorators/response-message.decorator';
-import { UserResponseDto } from './dto/user-response.dto';
 
 @Controller('users')
 @UseGuards(TokenAuthGuard, RolesGuard)

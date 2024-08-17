@@ -34,10 +34,10 @@ export class UrlClickController {
     async getUrlClick(@Param('click_id') click_id: number) {
         return this.urlClickService.getUrlClickById(click_id);
     }
-    @Post()
-    async createUrlClick(@Body() createUrlClickDto: CreateUrlClickDto) {
-        return this.urlClickService.createUrlClick(createUrlClickDto);
-    }
+    // @Post()
+    // async createUrlClick(@Body() createUrlClickDto: CreateUrlClickDto) {
+    //     return this.urlClickService.createUrlClick(createUrlClickDto);
+    // }
 
     @Put(':click_id')
     async updateUrlClick(

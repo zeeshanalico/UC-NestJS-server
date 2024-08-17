@@ -16,7 +16,7 @@ export class UrlService {
         }
     }
 
-    async totalRecords():Promise<Number> { return await this.prisma.user.count() };
+    async totalRecords():Promise<Number> { return await this.prisma.url.count({where: {is_deleted: false}}) };
 
     async generateQrCode(short_url: string): Promise<string> {
 
@@ -34,15 +34,6 @@ export class UrlService {
             throw new Error(`Failed to generate QR code: ${error.message}`);
         }
     }
-    // async getQrCodeBinaryData(qrCodePath: string): Promise<Buffer> {
-
-    //     if (!fs.existsSync(qrCodePath)) {
-    //         return Buffer.from('');//buffer stores binary data, so type of binary data is buffer
-    //     }
-    //     const binaryData = fs.readFileSync(qrCodePath);
-    //     const bd = Buffer.from(binaryData)
-    //     return bd;
-    // }
 
     generateShortenUrl(): string {
         return randomBytes(7).toString('hex');
@@ -70,7 +61,7 @@ export class UrlService {
             if (tag_name) {
                 url_tag = await tx.url_tag.findFirst({
                     where: { user_id, tag_name, }
-                })
+                })  
                 if (!url_tag) {
                     url_tag = await tx.url_tag.create({
                         data: { tag_name, user_id }

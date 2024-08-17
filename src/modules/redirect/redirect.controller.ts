@@ -15,17 +15,17 @@ export class RedirectController {
     @Get(':short_url')
     @IgnoreResponseInterceptor()
     async redirectUrl(@Req() req: Request, @Param() params: RedirectDto) {
+        
         const urlDetail = await this.urlService.getUrlDetailsByShortUrl(params.short_url);
         if (!urlDetail) {
             throw new HttpException('url not found', HttpStatus.NOT_FOUND)
         }
-        console.log("redir",urlDetail);
         
         const ip_address = req.ip;
         const user_agent = req.headers['user-agent'] || '';
         const referrer = req.headers.referer || '';
-        const access_date = new Date();  
-        const access_time = new Date();  
+        const access_date = new Date();
+        const access_time = new Date();
 
         const clickData: CreateUrlClickDto = {
             url_id: urlDetail.url_id,
@@ -41,6 +41,9 @@ export class RedirectController {
         if (expiration_date < new Date()) {
             throw new HttpException('url expired', HttpStatus.NOT_FOUND)
         }
+        await this.urlClickService.createUrlClick(clickData)
+
+            console.log('redirected');
         return { url: original_url, statusCode: 302 };
     }
 }

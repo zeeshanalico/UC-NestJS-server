@@ -22,10 +22,10 @@ export class UrlController {
     constructor(private readonly urlService: UrlService) { }
 
     @Get('/')
-
-
     async getAllUrls(@Req() req: Request) {
         const { page = 1, limit = 5, pregenerated = false } = req.query;
+        console.log(page, limit, pregenerated);
+
 
 
         const pageNumber = parseInt(page as string, 10) || 1;

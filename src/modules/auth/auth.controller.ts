@@ -18,8 +18,7 @@ export class AuthController {
     @ResponseMessage('Thanks for signing up!')
     async signUp(@Body(ValidationPipe) { email, password, role_id }: SignUpDto) {
         const username=generateUsername(email, 5);
-        console.log(username);
-        const user = await this.authService.signUp({username:'343',email, password, role_id});
+        const user = await this.authService.signUp({username,email, password, role_id});
         return user;
     }
 
@@ -41,7 +40,6 @@ export class AuthController {
             }
         }
     }
-
 }
 
 
