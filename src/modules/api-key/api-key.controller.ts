@@ -12,7 +12,6 @@ export class ApiKeyController {
         const { user_id, user_role, username } = req.user;
         const { expires_at } = req.body;
         const api_key = this.apiKeyService.generateApiKey();
-        // user_id:api_key:expires_at
         this.apiKeyService.createApiKey({ user_id, api_key, expires_at });
     }
 

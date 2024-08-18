@@ -10,7 +10,9 @@ import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { logo as LOGO } from '@prisma/client';
 import { transformLogoPath } from 'src/utils/transformShortUrl';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.deorator';
 @Controller('logo')
+@Roles('ADMIN','SUPER_ADMIN','USER')
 @UseGuards(TokenAuthGuard, RolesGuard)
 export class LogoController {
     constructor(private readonly logoService: LogoService) { }

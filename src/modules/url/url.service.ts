@@ -16,7 +16,7 @@ export class UrlService {
         }
     }
 
-    async totalRecords():Promise<Number> { return await this.prisma.url.count({where: {is_deleted: false}}) };
+    async totalRecords({ pregenerated = false }: { pregenerated: boolean }): Promise<Number> { return await this.prisma.url.count({ where: { is_deleted: false, is_pre_generated: pregenerated } }) };
 
     async generateQrCode(short_url: string): Promise<string> {
 
@@ -61,7 +61,7 @@ export class UrlService {
             if (tag_name) {
                 url_tag = await tx.url_tag.findFirst({
                     where: { user_id, tag_name, }
-                })  
+                })
                 if (!url_tag) {
                     url_tag = await tx.url_tag.create({
                         data: { tag_name, user_id }
@@ -151,6 +151,44 @@ export class UrlService {
         const urlTypes: URLTYPE[] = ["store", "product", "misc"];
         return urlTypes
     }
+
+    async updatePregeneratedUrl(user_id: string, url_id: string, data: Partial<URL> & { tag_name: string }) {
+        const { tag_name, url_type, expiration_date, original_url } = data
+        return await this.prisma.$transaction(async (tx) => {
+
+            let url_tag = null;
+            if (tag_name) {
+                url_tag = await tx.url_tag.findFirst({
+                    where: { user_id, tag_name, }
+                })
+
+                if (!url_tag) {
+                    url_tag = await tx.url_tag.create({
+                        data: { tag_name, user_id }
+                    })
+                }
+            }
+            console.log('url tag ____', url_tag);
+
+
+            const data = {
+                expiration_date: new Date(expiration_date).toISOString(),
+                url_id,
+                url_type,
+                original_url,
+                associated_at: new Date(),
+                is_pre_generated: false,
+                tag_id: url_tag?.tag_id ?? null,
+            }
+
+            const res = await tx.url.update({
+                where: { is_pre_generated: true, url_id },
+                data: { ...data }
+            })
+            return res;
+        })
+    }
+
     // _____________________________________________
 
     async getTags() {

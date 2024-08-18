@@ -134,7 +134,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ResponseI<T>> 
           message = "Can't reach database";
           error = 'DatabaseError';
           break;
-``
+          ``
         default:
           message = 'Prisma error occurred';
           error = exception.code;
@@ -180,22 +180,22 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ResponseI<T>> 
     const request = ctx.getRequest();
 
     this.logger.info(
-      `Request: ${request.method} ${request.url}`,
+      `Request: ${request.method} ${request.url} ${'\nBody:' + JSON.stringify(request.body, null, 2)}`,
       `ResponseInterceptor`,
     );
-    
+
     const isIgnore = this.reflector.get<string>(
       IS_IGNORE,
       context.getHandler(),
     )
-    
-    
+
+
     if (isIgnore) return next.handle();
-    
+
     return next.handle().pipe(
       map((res: unknown) => {
-        if(res)
-        return this.responseHandler(res, context);
+        if (res)
+          return this.responseHandler(res, context);
       }),
       catchError((err: unknown) =>
         throwError(() => this.catch(err, context)),

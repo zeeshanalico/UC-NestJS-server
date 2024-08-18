@@ -32,7 +32,8 @@ export class UserController {
       const users: user[] = await this.userService.getUsers();
       return   users;
   }
-  @Get('/') // Updated endpoint
+
+  @Get('/')
   @Public()
   async checkUsernameAvailability(@Query('username') username: string) {
       if (!username) {
@@ -44,7 +45,6 @@ export class UserController {
       }
       return  { isAvailable: true } ;
     }
-  
 
   @Get(':id')
   @ResponseMessage('User retrieved successfully')

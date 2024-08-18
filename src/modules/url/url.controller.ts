@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Req, Param, Redirect, NotFoundException, Patch, UseGuards, Delete, Res } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { Request, Response } from 'express';
-import { CreateUrlDto, PregenerateDto, UpdateUrlDto } from './url.dto';
+import { CreateUrlDto, PregenerateDto, UpdateUrlDto, UpdatePregeneratedUrlDto } from './url.dto';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
-import { Public } from 'src/common/decorators/public.decorator';
 // 4ae3b08a-c2b6-46b2-94f7-d5ce540e8c9d
 import { TokenAuthGuard } from 'src/common/guards/token-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -12,7 +11,6 @@ import { IgnoreResponseInterceptor } from 'src/common/decorators/ignoreResponseI
 import * as path from 'path'
 import { transformShortUrl } from 'src/utils/transformShortUrl';
 import { URLTYPE } from '@prisma/client';
-import { parseFilters } from 'src/utils/parseFilter';
 import * as fs from 'fs'
 @Controller('url')
 @UseGuards(TokenAuthGuard, RolesGuard)
@@ -25,8 +23,6 @@ export class UrlController {
     async getAllUrls(@Req() req: Request) {
         const { page = 1, limit = 5, pregenerated = false } = req.query;
         console.log(page, limit, pregenerated);
-
-
 
         const pageNumber = parseInt(page as string, 10) || 1;
         const pageSize = parseInt(limit as string, 10) || 5;
@@ -44,13 +40,13 @@ export class UrlController {
             short_url: transformShortUrl(url.short_url),
             ...url
         }));
-        const totalRecords = await this.urlService.totalRecords()
+        const totalRecords = await this.urlService.totalRecords({ pregenerated: pregenerated ? true : false });
         return { limit, pageNumber, offset, totalRecords, urls: updatedUrls };
     }
 
     @Get('qr-image/:short_url')
     @IgnoreResponseInterceptor()
-    getqrImage(@Req() req: Request, @Res() res: Response, @Param('short_url') short_url: string) {
+    getqrImage(@Res() res: Response, @Param('short_url') short_url: string) {
         try {
             const qrCodePath = path.join(this.urlService.uploadsQrCodeDir, `${short_url}.png`);
 
@@ -80,13 +76,20 @@ export class UrlController {
         const updatedUrl = await this.urlService.updateUrl(url_id, updateUrlDto);
         return updatedUrl;
     }
+    @Patch('update-pregenerated/:url_id')
+
+    async updatePregeneratedUrl(@Req() req: Request, @Param('url_id') url_id: string, @Body() updatePregeneratedUrl: UpdatePregeneratedUrlDto) {
+
+
+        const updatedUrl = await this.urlService.updatePregeneratedUrl(req.user.user_id, url_id, updatePregeneratedUrl);
+        // return updatedUrl;
+    }
 
     @Post('pregenerate')
     Pregenerate(@Req() req: Request, @Body() body: PregenerateDto) {
         const url = this.urlService.pregenerate({ user_id: req.user.user_id, url_type: body.url_type });
         return url;
     }
-
 
     @Delete('/:url_id')
     @ResponseMessage('URL deleted successfully')

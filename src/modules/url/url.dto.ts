@@ -57,3 +57,40 @@ export class PregenerateDto {
 }
 
 
+export class UpdatePregeneratedUrlDto {
+
+  @IsNotEmpty()
+  @IsString()
+  expiration_date: Date;
+
+  @IsNotEmpty()
+  @IsEnum(URLTYPE)
+  url_type: URLTYPE;
+
+  @IsNotEmpty()
+  @IsString()
+  tag_name: string;
+
+
+  @IsNotEmpty()
+  @IsString()
+  original_url: string;
+
+  @IsOptional()
+  @IsString()
+  url_id?: string;
+
+  @IsString()
+  short_url?: string;
+
+
+  @IsOptional()
+  associated?: boolean;
+
+  @IsOptional()
+  @IsEnum(STATUS)
+  status?: STATUS;
+
+}
+
+
