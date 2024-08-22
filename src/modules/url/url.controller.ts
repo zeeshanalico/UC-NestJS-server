@@ -76,13 +76,11 @@ export class UrlController {
         const updatedUrl = await this.urlService.updateUrl(url_id, updateUrlDto);
         return updatedUrl;
     }
+    
     @Patch('update-pregenerated/:url_id')
-
     async updatePregeneratedUrl(@Req() req: Request, @Param('url_id') url_id: string, @Body() updatePregeneratedUrl: UpdatePregeneratedUrlDto) {
-
-
         const updatedUrl = await this.urlService.updatePregeneratedUrl(req.user.user_id, url_id, updatePregeneratedUrl);
-        // return updatedUrl;
+        return updatedUrl;
     }
 
     @Post('pregenerate')

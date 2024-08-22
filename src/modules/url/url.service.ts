@@ -106,6 +106,8 @@ export class UrlService {
             include: {
                 logo: true,
                 url_tag: true,
+                url_click: true
+
             },
             skip: offset,
             take: limit,
